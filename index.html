@@ -1569,6 +1569,47 @@ document.addEventListener('DOMContentLoaded', function() {
         fridayDateElement.textContent = getCurrentFridayDate();
     }
 
+    // Configuration pour le stockage des astreintes
+    const GIST_ID = 'c94fd00580a131eb9dcd4758b2b382ee';
+
+    // Fonction pour lire les données depuis le Gist
+    async function fetchAstreinteData() {
+        try {
+            // Lecture du Gist public (pas besoin de token)
+            const response = await fetch(`https://api.github.com/gists/${GIST_ID}`);
+            
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+
+            const gistData = await response.json();
+            const content = gistData.files['astreintes.json'].content;
+            const data = JSON.parse(content);
+            
+            // Mettre à jour l'affichage
+            document.getElementById('agent1').textContent = data.agent1 || 'Agent 1';
+            document.getElementById('agent2').textContent = data.agent2 || 'Agent 2';
+            
+            // Ajouter une indication visuelle de la dernière mise à jour
+            if (data.lastUpdate) {
+                const dateFormat = new Intl.DateTimeFormat('fr-FR', {
+                    dateStyle: 'medium',
+                    timeStyle: 'short'
+                });
+                const lastUpdate = new Date(data.lastUpdate);
+                document.querySelector('.astreinte-content').setAttribute(
+                    'title', 
+                    `Dernière mise à jour : ${dateFormat.format(lastUpdate)}`
+                );
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('Erreur lors de la récupération des données:', error);
+            return { agent1: 'Agent 1', agent2: 'Agent 2' };
+        }
+    }
+
     // Configuration des astreintes
     const modal = document.getElementById('astreinteModal');
     const configBtn = document.getElementById('configAstreinte');
@@ -1586,11 +1627,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const options = agents.map(agent => `<option value="${agent}">${agent}</option>`).join('');
         agent1Select.innerHTML = '<option value="">Sélectionner un agent</option>' + options;
         agent2Select.innerHTML = '<option value="">Sélectionner un agent</option>' + options;
-
-        // Restaurer les sélections précédentes
-        const savedAgents = JSON.parse(localStorage.getItem('astreinteAgents') || '{}');
-        if (savedAgents.agent1) agent1Select.value = savedAgents.agent1;
-        if (savedAgents.agent2) agent2Select.value = savedAgents.agent2;
     }
 
     // Ouvrir le modal
@@ -1610,68 +1646,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === modal) closeModal();
     });
 
-    // Configuration GitHub
-    const GITHUB_OWNER = 'VOTRE_NOM_UTILISATEUR';
-    const GITHUB_REPO = 'VOTRE_REPO';
-    const GITHUB_ISSUE_NUMBER = 1; // Numéro de l'issue qui stockera les données
-    const GITHUB_TOKEN = ''; // À remplir si l'issue est privée
-
-    // Fonction pour lire les données depuis GitHub
-    async function fetchAstreinteData() {
-        try {
-            const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues/${GITHUB_ISSUE_NUMBER}/comments`);
-            const comments = await response.json();
-            
-            if (comments && comments.length > 0) {
-                // Prendre le dernier commentaire qui contient les données les plus récentes
-                const lastComment = comments[comments.length - 1];
-                const data = JSON.parse(lastComment.body);
-                
-                // Mettre à jour l'affichage
-                document.getElementById('agent1').textContent = data.agent1 || 'Agent 1';
-                document.getElementById('agent2').textContent = data.agent2 || 'Agent 2';
-                
-                // Mettre à jour le localStorage pour la sauvegarde locale
-                localStorage.setItem('astreinteAgents', JSON.stringify(data));
-                
-                return data;
-            }
-        } catch (error) {
-            console.error('Erreur lors de la récupération des données:', error);
-            // Utiliser les données locales en cas d'erreur
-            return JSON.parse(localStorage.getItem('astreinteAgents') || '{}');
-        }
-    }
-
-    // Fonction pour sauvegarder les données sur GitHub
-    async function saveAstreinteData(data) {
-        try {
-            const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues/${GITHUB_ISSUE_NUMBER}/comments`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json',
-                    ...(GITHUB_TOKEN && { 'Authorization': `token ${GITHUB_TOKEN}` })
-                },
-                body: JSON.stringify({
-                    body: JSON.stringify(data)
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('Erreur lors de la sauvegarde');
-            }
-
-            // Sauvegarder aussi en local
-            localStorage.setItem('astreinteAgents', JSON.stringify(data));
-        } catch (error) {
-            console.error('Erreur lors de la sauvegarde:', error);
-            alert('Erreur lors de la synchronisation avec GitHub. Les changements sont sauvegardés localement uniquement.');
-        }
-    }
-
-    // Modifier la fonction de sauvegarde existante
-    saveBtn.addEventListener('click', async () => {
+    // Sauvegarder les agents sélectionnés
+    saveBtn.addEventListener('click', () => {
         const agent1 = agent1Select.value;
         const agent2 = agent2Select.value;
 
@@ -1685,21 +1661,18 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const data = { 
-            agent1, 
-            agent2,
-            lastUpdate: new Date().toISOString(),
-            updatedBy: 'Dashboard User'
-        };
-
-        // Sauvegarder sur GitHub
-        await saveAstreinteData(data);
-
         // Mettre à jour l'affichage
         document.getElementById('agent1').textContent = agent1;
         document.getElementById('agent2').textContent = agent2;
 
         closeModal();
+
+        // Afficher un message pour expliquer comment mettre à jour le Gist
+        alert(`Pour mettre à jour les astreintes :
+1. Allez sur le Gist : https://gist.github.com/${GIST_ID}
+2. Cliquez sur "Edit"
+3. Mettez à jour les noms des agents
+4. Cliquez sur "Update gist"`);
     });
 
     // Charger les données au démarrage
