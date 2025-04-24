@@ -1798,23 +1798,88 @@ document.addEventListener('DOMContentLoaded', function() {
         nextFriday.setDate(today.getDate() + ((5 + 7 - today.getDay()) % 7));
         const fridayStr = nextFriday.toISOString().split('T')[0];
         
-        // Écouter les changements dans Firebase
-        astreintesRef.child(fridayStr).on('value', (snapshot) => {
-            const astreinteData = snapshot.val();
+        // Écouter les changements dans Firebase de manière continue
+        astreintesRef.on('value', (snapshot) => {
+            const allAstreintes = snapshot.val() || {};
             
-            if (astreinteData) {
-                const [agent1, agent2] = astreinteData;
+            // Trouver l'astreinte la plus proche dans le futur
+            const futureAstreintes = Object.entries(allAstreintes)
+                .filter(([date]) => new Date(date) >= today)
+                .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB));
+
+            if (futureAstreintes.length > 0) {
+                const [date, agents] = futureAstreintes[0];
+                const displayDate = new Date(date).toLocaleDateString('fr-FR');
                 astreinteText.innerHTML = `
                     <span>
-                        Astreinte du ${nextFriday.toLocaleDateString('fr-FR')} : 
-                        <strong>${agent1}</strong> et <strong>${agent2}</strong>
+                        Astreinte du ${displayDate} : 
+                        <strong>${agents[0]}</strong> et <strong>${agents[1]}</strong>
                     </span>`;
             } else {
                 astreinteText.innerHTML = `
                     <span class="astreinte-alert">
-                        ⚠️ Aucune astreinte définie pour la semaine du ${nextFriday.toLocaleDateString('fr-FR')}
+                        ⚠️ Aucune astreinte définie pour la semaine à venir
                     </span>`;
             }
+        });
+    }
+
+    function updateAstreintesList() {
+        const astreintesList = document.getElementById('astreintes-list');
+        if (!astreintesList) return;
+
+        // Écouter les changements dans Firebase
+        astreintesRef.on('value', (snapshot) => {
+            const astreintes = snapshot.val() || {};
+            astreintesList.innerHTML = '';
+            
+            // Trier les astreintes par date
+            Object.entries(astreintes)
+                .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
+                .forEach(([date, agentsList]) => {
+                    const li = document.createElement('li');
+                    const displayDate = new Date(date).toLocaleDateString('fr-FR');
+                    li.innerHTML = `
+                        Semaine du ${displayDate} : 
+                        <strong>${agentsList[0]}</strong> et <strong>${agentsList[1]}</strong>
+                        ${isAuthenticated ? `
+                            <button class="delete-btn" data-date="${date}">
+                                Supprimer
+                            </button>
+                        ` : ''}
+                    `;
+                    astreintesList.appendChild(li);
+
+                    // Mettre à jour les compteurs
+                    if (agents[agentsList[0]]) agents[agentsList[0]].count++;
+                    if (agents[agentsList[1]]) agents[agentsList[1]].count++;
+                });
+
+            // Sauvegarder les compteurs mis à jour
+            localStorage.setItem('agents', JSON.stringify(agents));
+            updateStats();
+
+            // Gestionnaires d'événements pour les boutons de suppression
+            astreintesList.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (!isAuthenticated) {
+                        alert('Veuillez vous authentifier pour effectuer cette action.');
+                        return;
+                    }
+                    const date = e.target.dataset.date;
+                    
+                    // Supprimer de Firebase
+                    astreintesRef.child(date).remove()
+                        .then(() => {
+                            updateAstreinteDisplay();
+                            updateStats();
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de la suppression:', error);
+                            alert('Erreur lors de la suppression de l\'astreinte');
+                        });
+                });
+            });
         });
     }
 
@@ -1908,302 +1973,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         });
     }
-
-    function updateAstreintesList() {
-        const astreintesList = document.getElementById('astreintes-list');
-        if (!astreintesList) return;
-
-        // Écouter les changements dans Firebase
-        astreintesRef.on('value', (snapshot) => {
-            const astreintes = snapshot.val() || {};
-            astreintesList.innerHTML = '';
-            
-            Object.entries(astreintes)
-                .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
-                .forEach(([date, agentsList]) => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        Semaine du ${new Date(date).toLocaleDateString('fr-FR')} : 
-                        <strong>${agentsList[0]}</strong> et <strong>${agentsList[1]}</strong>
-                        ${isAuthenticated ? `
-                            <button class="delete-btn" data-date="${date}">
-                                Supprimer
-                            </button>
-                        ` : ''}
-                    `;
-                    astreintesList.appendChild(li);
-                });
-
-            // Gestionnaires d'événements pour les boutons de suppression
-            astreintesList.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    if (!isAuthenticated) {
-                        alert('Veuillez vous authentifier pour effectuer cette action.');
-                        return;
-                    }
-                    const date = e.target.dataset.date;
-                    
-                    // Supprimer de Firebase
-                    astreintesRef.child(date).remove()
-                        .then(() => {
-                            updateAstreinteDisplay();
-                            updateStats();
-                        })
-                        .catch(error => {
-                            console.error('Erreur lors de la suppression:', error);
-                            alert('Erreur lors de la suppression de l\'astreinte');
-                        });
-                });
-            });
-        });
-    }
-
-    // Mise à jour initiale
-    updateModalContent();
-    updateAstreinteDisplay();
-
-    // Mise à jour quotidienne à minuit
-    setInterval(() => {
-        const now = new Date();
-        if (now.getHours() === 0 && now.getMinutes() === 0) {
-            updateAstreinteDisplay();
-        }
-    }, 60000);
-
-    // Déconnexion après 30 minutes d'inactivité
-    let inactivityTimer;
-    function resetInactivityTimer() {
-        clearTimeout(inactivityTimer);
-        inactivityTimer = setTimeout(() => {
-            isAuthenticated = false;
-            if (astreinteModal.classList.contains('show')) {
-                astreinteModal.classList.remove('show');
-                alert('Session expirée. Veuillez vous reconnecter.');
-            }
-        }, 30 * 60 * 1000);
-    }
-
-    document.addEventListener('mousemove', resetInactivityTimer);
-    document.addEventListener('keypress', resetInactivityTimer);
-    document.addEventListener('click', resetInactivityTimer);
-
-    // Désactiver les formulaires si non authentifié
-    function updateFormAccess() {
-        const forms = document.querySelectorAll('#absence-form, #permutation-form');
-        forms.forEach(form => {
-            const inputs = form.querySelectorAll('input, select, button');
-            inputs.forEach(input => {
-                input.disabled = !isAuthenticated;
-            });
-        });
-    }
-
-    setInterval(updateFormAccess, 1000);
-
-    // Configuration GitHub
-    const GITHUB_CONFIG = {
-        owner: 'Frouk91',
-        repo: 'dashboard-astreintes',
-        path: 'data/astreintes.json',
-        branch: 'main',
-        token: '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',
-        tokenExpiration: null,
-        refreshToken: null,
-        tokenRefreshEndpoint: 'http://localhost:3000/refresh-token'
-    };
-
-    // Fonction pour vérifier si le token est expiré
-    function isTokenExpired() {
-        return GITHUB_CONFIG.tokenExpiration && new Date() >= new Date(GITHUB_CONFIG.tokenExpiration);
-    }
-
-    // Fonction pour rafraîchir le token
-    async function refreshGitHubToken() {
-        try {
-            const response = await fetch(GITHUB_CONFIG.tokenRefreshEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    refreshToken: GITHUB_CONFIG.refreshToken
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('Échec du rafraîchissement du token');
-            }
-
-            const data = await response.json();
-            GITHUB_CONFIG.token = data.accessToken;
-            GITHUB_CONFIG.tokenExpiration = data.expiresAt;
-            GITHUB_CONFIG.refreshToken = data.refreshToken;
-
-            // Sauvegarder les nouvelles informations du token
-            localStorage.setItem('githubToken', JSON.stringify({
-                token: GITHUB_CONFIG.token,
-                expiration: GITHUB_CONFIG.tokenExpiration,
-                refreshToken: GITHUB_CONFIG.refreshToken
-            }));
-
-            return true;
-        } catch (error) {
-            console.error('Erreur lors du rafraîchissement du token:', error);
-            return false;
-        }
-    }
-
-    // Fonction pour gérer les appels à l'API GitHub avec renouvellement automatique du token
-    async function githubApiCall(endpoint, options = {}) {
-        if (isTokenExpired()) {
-            const refreshSuccess = await refreshGitHubToken();
-            if (!refreshSuccess) {
-                throw new Error('Impossible de rafraîchir le token GitHub');
-            }
-        }
-
-        const response = await fetch(endpoint, {
-            ...options,
-            headers: {
-                ...options.headers,
-                'Authorization': `token ${GITHUB_CONFIG.token}`,
-                'Accept': 'application/vnd.github.v3+json'
-            }
-        });
-
-        if (response.status === 401) {
-            // Token invalide ou expiré, on essaie de le rafraîchir
-            const refreshSuccess = await refreshGitHubToken();
-            if (!refreshSuccess) {
-                throw new Error('Token GitHub invalide et impossible de le rafraîchir');
-            }
-            // Réessayer l'appel avec le nouveau token
-            return githubApiCall(endpoint, options);
-        }
-
-        return response;
-    }
-
-    // Modification de la fonction loadFromGitHub pour utiliser githubApiCall
-    async function loadFromGitHub() {
-        try {
-            const response = await githubApiCall(
-                `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`
-            );
-
-            if (!response.ok) {
-                throw new Error('Erreur lors du chargement des données depuis GitHub');
-            }
-
-            const data = await response.json();
-            const content = JSON.parse(atob(data.content));
-            const sha = data.sha;
-
-            return { content, sha };
-        } catch (error) {
-            console.error('Erreur lors du chargement depuis GitHub:', error);
-            return null;
-        }
-    }
-
-    // Modification de la fonction saveToGitHub pour utiliser githubApiCall
-    async function saveToGitHub(data, sha) {
-        try {
-            const content = btoa(JSON.stringify(data, null, 2));
-            const response = await githubApiCall(
-                `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: 'Mise à jour des astreintes',
-                        content: content,
-                        sha: sha,
-                        branch: GITHUB_CONFIG.branch
-                    })
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error('Erreur lors de la sauvegarde sur GitHub');
-            }
-
-            return true;
-        } catch (error) {
-            console.error('Erreur lors de la sauvegarde sur GitHub:', error);
-            return false;
-        }
-    }
-
-    // Chargement initial des informations du token depuis le localStorage
-    function loadGitHubTokenInfo() {
-        const savedToken = localStorage.getItem('githubToken');
-        if (savedToken) {
-            const tokenInfo = JSON.parse(savedToken);
-            GITHUB_CONFIG.token = tokenInfo.token;
-            GITHUB_CONFIG.tokenExpiration = tokenInfo.expiration;
-            GITHUB_CONFIG.refreshToken = tokenInfo.refreshToken;
-        }
-    }
-
-    // Appel au chargement de la page
-    loadGitHubTokenInfo();
-
-    // Modification de la fonction saveData pour inclure la synchronisation GitHub
-    async function saveData() {
-        // Sauvegarde locale
-        localStorage.setItem('agents', JSON.stringify(agents));
-        localStorage.setItem('astreintes', JSON.stringify(astreintes));
-        localStorage.setItem('absences', JSON.stringify(absences));
-
-        // Préparation des données pour GitHub
-        const dataForGitHub = {
-            lastUpdate: new Date().toISOString(),
-            agents: agents,
-            astreintes: astreintes,
-            absences: absences
-        };
-
-        // Chargement du SHA actuel
-        const currentData = await loadFromGitHub();
-        if (currentData) {
-            // Sauvegarde sur GitHub
-            const success = await saveToGitHub(dataForGitHub, currentData.sha);
-            if (success) {
-                console.log('Données synchronisées avec GitHub');
-            } else {
-                console.error('Échec de la synchronisation avec GitHub');
-            }
-        }
-    }
-
-    // Modification de la fonction de chargement initial
-    async function initializeData() {
-        // Essayer de charger depuis GitHub d'abord
-        const githubData = await loadFromGitHub();
-        if (githubData && githubData.content) {
-            const { agents: githubAgents, astreintes: githubAstreintes, absences: githubAbsences } = githubData.content;
-            
-            // Mise à jour des données locales avec les données de GitHub
-            Object.assign(agents, githubAgents);
-            Object.assign(astreintes, githubAstreintes);
-            Object.assign(absences, githubAbsences);
-            
-            // Sauvegarde dans le localStorage
-            localStorage.setItem('agents', JSON.stringify(agents));
-            localStorage.setItem('astreintes', JSON.stringify(astreintes));
-            localStorage.setItem('absences', JSON.stringify(absences));
-        }
-
-        // Mise à jour de l'interface
-        updateModalContent();
-        updateAstreinteDisplay();
-    }
-
-    // Appel de l'initialisation au chargement
-    initializeData();
 
     // Formulaire d'absence
     const absenceForm = document.getElementById('absence-form');
