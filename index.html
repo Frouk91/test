@@ -1407,117 +1407,132 @@
     </style>
 </head>
 <body>
-<a href="#main-content" class="skip-link">Aller au contenu principal</a>
-<button class="theme-toggle" aria-label="Changer le thème" role="switch" aria-checked="false">
-    <span class="theme-toggle-icon">
-        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-    </span>
-    <span class="theme-toggle-text">Thème clair</span>
-</button>
-<div class="container">
-<header role="banner">
-<h1>Dashboard Css Digital</h1>
-<p>Ressources et contacts utiles</p>
-<div class="header-tools">
-<a href="https://neopostgroup.sharepoint.com/:x:/r/teams/EUR_FRANeopostServices/_layouts/15/Doc.aspx?sourcedoc=%7BA5E9B3C3-8E7B-4782-B237-B17DE798D774%7D&file=Planning%20CS%202025.xlsx&action=default&mobileredirect=true" class="planning-link" target="_blank">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
-<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-<line x1="16" y1="2" x2="16" y2="6"></line>
-<line x1="8" y1="2" x2="8" y2="6"></line>
-<line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>Planning CS 2025</a>
+    <!-- Ajout des scripts Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
 
-<a href="https://online.emea.adp.com/signin/v1?APPID=FR_Offers&productId=157a7c6f-7a3b-4da4-b7eb-7717c6188894&returnURL=https://pointage.adp.com/igested/pointage&callingAppId=FR_Offers&TARGET=-SM-https://pointage.adp.com/igested/pointage" class="adp-link" target="_blank">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
-<circle cx="12" cy="12" r="10"></circle>
-<polyline points="12 6 12 12 16 14"></polyline>
-</svg>ADP</a>
+    <!-- Configuration Firebase -->
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDpxzxBvCwuVxPqNhGBxhqEVvBgXMwvxDk",
+            authDomain: "dashboard-astreintes.firebaseapp.com",
+            databaseURL: "https://dashboard-astreintes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "dashboard-astreintes",
+            storageBucket: "dashboard-astreintes.appspot.com",
+            messagingSenderId: "485961891375",
+            appId: "1:485961891375:web:b9e5be9f9c9e3c3f8b1234"
+        };
 
-<div class="ticket-dropdown">
-<div class="ticket-btn">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
-<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-</svg>Ouvrir un ticket</div>
-<div class="ticket-content">
-<a href="https://esker.my.site.com/s/login/?language=en_US&ec=302&startURL=%2Fs%2F" target="_blank">Esker</a>
-<a href="https://primobox.atlassian.net/servicedesk/customer/portal/1/user/login?destination=portal%2F1%2Fcreate%2F1" target="_blank">Primobox</a>
-</div>
-</div>
+        // Initialisation de Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    </script>
 
-<div class="inspector-dropdown">
-<div class="inspector-btn">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
-<polyline points="16 18 22 12 16 6"></polyline>
-<polyline points="8 6 2 12 8 18"></polyline>
-</svg>Inspecteur de variable</div>
-<div class="inspector-content">
-<a href="http://dev.meereen.nsweb.neodom.org/DemoWSNeotouch/inspecter.php" target="_blank">Tour D</a>
-<a href="http://dev.meereen.nsweb.neodom.org/DemoWSNeotouchG/inspecter.php" target="_blank">Tour G</a>
-</div>
-</div>
-</div>
-</header>
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+    <button class="theme-toggle" aria-label="Changer le thème" role="switch" aria-checked="false">
+        <span class="theme-toggle-icon">
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </span>
+        <span class="theme-toggle-text">Thème clair</span>
+    </button>
+    <div class="container">
+    <header role="banner">
+    <h1>Dashboard Css Digital</h1>
+    <p>Ressources et contacts utiles</p>
+    <div class="header-tools">
+    <a href="https://neopostgroup.sharepoint.com/:x:/r/teams/EUR_FRANeopostServices/_layouts/15/Doc.aspx?sourcedoc=%7BA5E9B3C3-8E7B-4782-B237-B17DE798D774%7D&file=Planning%20CS%202025.xlsx&action=default&mobileredirect=true" class="planning-link" target="_blank">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+    <line x1="16" y1="2" x2="16" y2="6"></line>
+    <line x1="8" y1="2" x2="8" y2="6"></line>
+    <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>Planning CS 2025</a>
 
-<div class="astreinte-banner" role="button" tabindex="0" aria-haspopup="dialog">
-    <div class="astreinte-content">
-        <svg class="astreinte-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
-        </svg>
-        <span id="astreinte-text">Chargement de l'astreinte...</span>
+    <a href="https://online.emea.adp.com/signin/v1?APPID=FR_Offers&productId=157a7c6f-7a3b-4da4-b7eb-7717c6188894&returnURL=https://pointage.adp.com/igested/pointage&callingAppId=FR_Offers&TARGET=-SM-https://pointage.adp.com/igested/pointage" class="adp-link" target="_blank">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
+    <circle cx="12" cy="12" r="10"></circle>
+    <polyline points="12 6 12 12 16 14"></polyline>
+    </svg>ADP</a>
+
+    <div class="ticket-dropdown">
+    <div class="ticket-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+    </svg>Ouvrir un ticket</div>
+    <div class="ticket-content">
+    <a href="https://esker.my.site.com/s/login/?language=en_US&ec=302&startURL=%2Fs%2F" target="_blank">Esker</a>
+    <a href="https://primobox.atlassian.net/servicedesk/customer/portal/1/user/login?destination=portal%2F1%2Fcreate%2F1" target="_blank">Primobox</a>
     </div>
-</div>
+    </div>
 
-<!-- Modal d'authentification -->
-<div id="auth-modal" class="modal" role="dialog" aria-labelledby="auth-title" aria-hidden="true">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="auth-title">Authentification requise</h2>
-            <button class="close-modal" aria-label="Fermer">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="auth-form">
-                <div class="form-group">
-                    <label for="password">Code d'accès :</label>
-                    <input type="password" id="password" required>
-                </div>
-                <div class="form-error" id="auth-error"></div>
-                <button type="submit" class="btn-primary">Se connecter</button>
-            </form>
+    <div class="inspector-dropdown">
+    <div class="inspector-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
+    <polyline points="16 18 22 12 16 6"></polyline>
+    <polyline points="8 6 2 12 8 18"></polyline>
+    </svg>Inspecteur de variable</div>
+    <div class="inspector-content">
+    <a href="http://dev.meereen.nsweb.neodom.org/DemoWSNeotouch/inspecter.php" target="_blank">Tour D</a>
+    <a href="http://dev.meereen.nsweb.neodom.org/DemoWSNeotouchG/inspecter.php" target="_blank">Tour G</a>
+    </div>
+    </div>
+    </div>
+    </header>
+
+    <div class="astreinte-banner" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="astreinte-content">
+            <svg class="astreinte-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span id="astreinte-text">Chargement de l'astreinte...</span>
         </div>
     </div>
-</div>
 
-<!-- Modal de gestion des astreintes -->
-<div id="astreinte-modal" class="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modal-title">Gestion des Astreintes</h2>
-            <button class="close-modal" aria-label="Fermer">&times;</button>
+    <!-- Modal d'authentification -->
+    <div id="auth-modal" class="modal" role="dialog" aria-labelledby="auth-title" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="auth-title">Authentification requise</h2>
+                <button class="close-modal" aria-label="Fermer">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="auth-form">
+                    <div class="form-group">
+                        <label for="password">Code d'accès :</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="form-error" id="auth-error"></div>
+                    <button type="submit" class="btn-primary">Se connecter</button>
+                </form>
+            </div>
         </div>
-        <div class="modal-tabs">
-            <button class="tab-btn active" data-tab="astreintes">Astreintes</button>
-            <button class="tab-btn" data-tab="absences">Absences</button>
-            <button class="tab-btn" data-tab="planning">Planning</button>
-        </div>
-        <div class="modal-body">
-            <!-- Onglet Astreintes -->
-            <div class="tab-content active" id="astreintes">
+    </div>
+
+    <!-- Modal de gestion des astreintes -->
+    <div id="astreinte-modal" class="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Gestion des Astreintes</h2>
+                <button class="close-modal" aria-label="Fermer">&times;</button>
+            </div>
+            <div class="modal-body">
                 <form id="astreinte-form">
                     <div class="form-group">
                         <label for="astreinte-date">Semaine du :</label>
@@ -1526,16 +1541,32 @@
                     <div class="form-group">
                         <label for="agent1-select">Premier agent :</label>
                         <select id="agent1-select" required>
-                            <!-- Rempli dynamiquement -->
+                            <option value="">Sélectionnez un agent</option>
+                            <option value="Omer">Omer</option>
+                            <option value="Philippe">Philippe</option>
+                            <option value="Adel">Adel</option>
+                            <option value="Julien">Julien</option>
+                            <option value="Gaël">Gaël</option>
+                            <option value="Toufik">Toufik</option>
+                            <option value="Kevin">Kevin</option>
+                            <option value="Camil">Camil</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="agent2-select">Second agent :</label>
                         <select id="agent2-select" required>
-                            <!-- Rempli dynamiquement -->
+                            <option value="">Sélectionnez un agent</option>
+                            <option value="Omer">Omer</option>
+                            <option value="Philippe">Philippe</option>
+                            <option value="Adel">Adel</option>
+                            <option value="Julien">Julien</option>
+                            <option value="Gaël">Gaël</option>
+                            <option value="Toufik">Toufik</option>
+                            <option value="Kevin">Kevin</option>
+                            <option value="Camil">Camil</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn-primary">Définir l'astreinte</button>
+                    <button type="submit" class="btn-primary">Enregistrer l'astreinte</button>
                 </form>
                 <div class="astreintes-list">
                     <h3>Astreintes planifiées</h3>
@@ -1544,83 +1575,66 @@
                     </ul>
                 </div>
             </div>
-
-            <!-- Onglet Absences -->
-            <div class="tab-content" id="absences">
-                <form id="absence-form">
-                    <div class="form-group">
-                        <label for="agent-select">Agent :</label>
-                        <select id="agent-select" required>
-                            <!-- Rempli dynamiquement -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="absence-date">Date d'absence :</label>
-                        <input type="date" id="absence-date" required>
-                    </div>
-                    <button type="submit" class="btn-primary">Déclarer l'absence</button>
-                </form>
-                <div class="absences-list">
-                    <h3>Absences déclarées</h3>
-                    <ul id="absences-list">
-                        <!-- Rempli dynamiquement -->
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Onglet Planning -->
-            <div class="tab-content" id="planning">
-                <div class="planning-stats">
-                    <h3>Statistiques des astreintes</h3>
-                    <div id="stats-container">
-                        <!-- Rempli dynamiquement -->
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-</div>
 
-<main id="main-content" role="main">
-<div class="content">
-<div class="card">
-<h2>Numéros Utiles</h2>
-<ul class="contact-list">
-<li>
-<span class="contact-name">Accueil Quadient</span>
-<span class="contact-number">0 892 892 111</span>
-</li>
-<li>
-<span class="contact-name">Neotouch & Neobox</span>
-<span class="contact-number">01 41 06 74 00</span>
-</li>
-<li>
-<span class="contact-name">Neotouch Prio</span>
-<span class="contact-number">01 56 38 36 80</span>
-</li>
-<li>
-<span class="contact-name">Neotouch Syndic</span>
-<span class="contact-number">01 55 69 62 73</span>
-</li>
-<li>
-<span class="contact-name">Neotouch Presta</span>
-<span class="contact-number">01 73 09 40 93</span>
-</li>
-<li>
-<span class="contact-name">Esker</span>
-<span class="contact-number">04 26 99 07 60</span>
-</li>
-<li>
-<span class="contact-name">Impress Distribute</span>
-<span class="contact-number">01 55 69 65 00</span>
-</li>
-<li>
-<span class="contact-name">Impress Automate</span>
-<span class="contact-number">03 28 76 70 00</span>
-</li>
-</ul>
-</div>
+    <main id="main-content" role="main">
+    <div class="content">
+    <div class="card">
+    <h2>Numéros Utiles</h2>
+    <ul class="contact-list">
+    <li>
+    <span class="contact-name">Accueil Quadient</span>
+    <span class="contact-number">0 892 892 111</span>
+    </li>
+    <li>
+    <span class="contact-name">Neotouch & Neobox</span>
+    <span class="contact-number">01 41 06 74 00</span>
+    </li>
+    <li>
+    <span class="contact-name">Neotouch Prio</span>
+    <span class="contact-number">01 56 38 36 80</span>
+    </li>
+    <li>
+    <span class="contact-name">Neotouch Syndic</span>
+    <span class="contact-number">01 55 69 62 73</span>
+    </li>
+    <li>
+    <span class="contact-name">Neotouch Presta</span>
+    <span class="contact-number">01 73 09 40 93</span>
+    </li>
+    <li>
+    <span class="contact-name">Esker</span>
+    <span class="contact-number">04 26 99 07 60</span>
+    </li>
+    <li>
+    <span class="contact-name">Impress Distribute</span>
+    <span class="contact-number">01 55 69 65 00</span>
+    </li>
+    <li>
+    <span class="contact-name">Impress Automate</span>
+    <span class="contact-number">03 28 76 70 00</span>
+    </li>
+    </ul>
+    </div>
 
+    <div class="card">
+    <h2>Ressources Importantes</h2>
+    <ul class="links-list">
+    <li>
+    <a href="https://frouk91.github.io/Neotouch/" target="_blank">Template Escalade</a>
+    </li>
+    <li>
+    <a href="https://neopostgroup.sharepoint.com/teams/EUR_FRANeopostServices/Shared%20Documents/Forms/AllItems.aspx?web=1&amp;FolderCTID=0x0120006DC46694A0FCFD4A9458CFC8279B7DC0&amp;id=%2Fteams%2FEUR_FRANeopostServices%2FShared%20Documents%2F03%20-%20Centre%20de%20Services%20Excellence%2F03%20-%20EQUIPES%20CSE%2FD%C3%A9pt%2E%20CSS%20Digital%2FProcess%202024%2FNouvelle%20Codification%20Digitale%200624%2Epdf&amp;viewid=0f83a175-7a5a-4608-87fe-6063c068e53d&amp;parent=%2Fteams%2FEUR_FRANeopostServices%2FShared%20Documents%2F03%20-%20Centre%20de%20Services%20Excellence%2F03%20-%20EQUIPES%20CSE%2FD%C3%A9pt%2E%20CSS%20Digital%2FProcess%202024" target="_blank">Codification des requêtes</a>
+    </li>
+    <li>
+    <a href="https://neopostgroup.sharepoint.com/teams/EUR_FRANeopostServices/Shared%20Documents/Forms/AllItems.aspx?web=1&amp;FolderCTID=0x0120006DC46694A0FCFD4A9458CFC8279B7DC0&amp;id=%2Fteams%2FEUR_FRANeopostServices%2FShared%20Documents%2F03%20-%20Centre%20de%20Services%20Excellence%2F03%20-%20EQUIPES%20CSE%2FD%C3%A9pt%2E%20CSS%20Digital%2FProcess%202024%2FScript%20d%27appels%20%200624%2Epdf&amp;viewid=0f83a175-7a5a-4608-87fe-6063c068e53d&amp;parent=%2Fteams%2FEUR_FRANeopostServices%2FShared%20Documents%2F03%20-%20Centre%20de%20Services%20Excellence%2F03%20-%20EQUIPES%20CSE%2FD%C3%A9pt%2E%20CSS%20Digital%2FProcess%202024" target="_blank">Script d'appels</a>
+    </li>
+    <li>
+    <a href="https://neopostgroup.sharepoint.com/teams/EUR_FRANeopostServices/Shared%20Documents/Forms/AllItems.aspx?web=1&amp;FolderCTID=0x0120006DC46694A0FCFD4A9458CFC8279B7DC0&amp;id=%2Fteams%2FEUR_FRANeopostServices%2FShared%20Documents%2F03%20-%20Centre%20de%20Services%20Excellence%2F03%20-%20EQUIPES%20CSE%2FD%C3%A9pt%2E%20CSS%20Digital%2FAccompagnements%2FTache%20pour%20Software%2Epdf&amp;viewid=0f83a175-7a5a-4608-87fe-6063c068e53d&amp;parent=%2Fteams%2FEUR_FRANeopostServices%2FShared%20Documents%2F03%20-%20Centre%20de%20Services%20Excellence%2F03%20-%20EQUIPES%20CSE%2FD%C3%A9pt%2E%20CSS%20Digital%2FAccompagnements" target="_blank">Tache pour Software</a>
+    </li>
+    <li><a href="https://www.trustesker.com" target="_blank">État des tours Esker</a>
+    <li>
 <div class="card">
 <h2>Ressources Importantes</h2>
 <ul class="links-list">
@@ -2050,22 +2064,94 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Configuration GitHub
     const GITHUB_CONFIG = {
-        owner: 'Frouk91',  // À remplacer par votre nom d'utilisateur GitHub
-        repo: 'dashboard-astreintes',  // À remplacer par le nom de votre dépôt
-        path: 'data/astreintes.json',  // Chemin du fichier dans le dépôt
+        owner: 'Frouk91',
+        repo: 'dashboard-astreintes',
+        path: 'data/astreintes.json',
         branch: 'main',
-        token: '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'  // À remplir avec votre token GitHub
+        token: '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',
+        tokenExpiration: null,
+        refreshToken: null,
+        tokenRefreshEndpoint: 'http://localhost:3000/refresh-token'
     };
 
-    // Fonction pour charger les données depuis GitHub
+    // Fonction pour vérifier si le token est expiré
+    function isTokenExpired() {
+        return GITHUB_CONFIG.tokenExpiration && new Date() >= new Date(GITHUB_CONFIG.tokenExpiration);
+    }
+
+    // Fonction pour rafraîchir le token
+    async function refreshGitHubToken() {
+        try {
+            const response = await fetch(GITHUB_CONFIG.tokenRefreshEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    refreshToken: GITHUB_CONFIG.refreshToken
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Échec du rafraîchissement du token');
+            }
+
+            const data = await response.json();
+            GITHUB_CONFIG.token = data.accessToken;
+            GITHUB_CONFIG.tokenExpiration = data.expiresAt;
+            GITHUB_CONFIG.refreshToken = data.refreshToken;
+
+            // Sauvegarder les nouvelles informations du token
+            localStorage.setItem('githubToken', JSON.stringify({
+                token: GITHUB_CONFIG.token,
+                expiration: GITHUB_CONFIG.tokenExpiration,
+                refreshToken: GITHUB_CONFIG.refreshToken
+            }));
+
+            return true;
+        } catch (error) {
+            console.error('Erreur lors du rafraîchissement du token:', error);
+            return false;
+        }
+    }
+
+    // Fonction pour gérer les appels à l'API GitHub avec renouvellement automatique du token
+    async function githubApiCall(endpoint, options = {}) {
+        if (isTokenExpired()) {
+            const refreshSuccess = await refreshGitHubToken();
+            if (!refreshSuccess) {
+                throw new Error('Impossible de rafraîchir le token GitHub');
+            }
+        }
+
+        const response = await fetch(endpoint, {
+            ...options,
+            headers: {
+                ...options.headers,
+                'Authorization': `token ${GITHUB_CONFIG.token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (response.status === 401) {
+            // Token invalide ou expiré, on essaie de le rafraîchir
+            const refreshSuccess = await refreshGitHubToken();
+            if (!refreshSuccess) {
+                throw new Error('Token GitHub invalide et impossible de le rafraîchir');
+            }
+            // Réessayer l'appel avec le nouveau token
+            return githubApiCall(endpoint, options);
+        }
+
+        return response;
+    }
+
+    // Modification de la fonction loadFromGitHub pour utiliser githubApiCall
     async function loadFromGitHub() {
         try {
-            const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`, {
-                headers: {
-                    'Authorization': `token ${GITHUB_CONFIG.token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
+            const response = await githubApiCall(
+                `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`
+            );
 
             if (!response.ok) {
                 throw new Error('Erreur lors du chargement des données depuis GitHub');
@@ -2082,24 +2168,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Fonction pour sauvegarder les données sur GitHub
+    // Modification de la fonction saveToGitHub pour utiliser githubApiCall
     async function saveToGitHub(data, sha) {
         try {
             const content = btoa(JSON.stringify(data, null, 2));
-            const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `token ${GITHUB_CONFIG.token}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: 'Mise à jour des astreintes',
-                    content: content,
-                    sha: sha,
-                    branch: GITHUB_CONFIG.branch
-                })
-            });
+            const response = await githubApiCall(
+                `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Mise à jour des astreintes',
+                        content: content,
+                        sha: sha,
+                        branch: GITHUB_CONFIG.branch
+                    })
+                }
+            );
 
             if (!response.ok) {
                 throw new Error('Erreur lors de la sauvegarde sur GitHub');
@@ -2111,6 +2198,20 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
     }
+
+    // Chargement initial des informations du token depuis le localStorage
+    function loadGitHubTokenInfo() {
+        const savedToken = localStorage.getItem('githubToken');
+        if (savedToken) {
+            const tokenInfo = JSON.parse(savedToken);
+            GITHUB_CONFIG.token = tokenInfo.token;
+            GITHUB_CONFIG.tokenExpiration = tokenInfo.expiration;
+            GITHUB_CONFIG.refreshToken = tokenInfo.refreshToken;
+        }
+    }
+
+    // Appel au chargement de la page
+    loadGitHubTokenInfo();
 
     // Modification de la fonction saveData pour inclure la synchronisation GitHub
     async function saveData() {
