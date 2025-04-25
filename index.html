@@ -1645,7 +1645,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === modal) closeModal();
     });
 
-    // Modifier la fonction de sauvegarde
+    // Sauvegarder les agents sélectionnés
     saveBtn.addEventListener('click', () => {
         const agent1 = agent1Select.value;
         const agent2 = agent2Select.value;
@@ -1660,23 +1660,28 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Ouvrir le Gist dans un nouvel onglet avec les instructions
+        // Créer le contenu JSON formaté
+        const jsonContent = JSON.stringify({
+            agent1: agent1,
+            agent2: agent2,
+            lastUpdate: new Date().toISOString()
+        }, null, 2);
+
+        // Ouvrir le Gist dans un nouvel onglet
         const gistUrl = `https://gist.github.com/Frouk91/${GIST_ID}/edit`;
         window.open(gistUrl, '_blank');
 
-        // Afficher les instructions
-        alert(`Pour mettre à jour les astreintes :
+        // Afficher les instructions avec le JSON à copier
+        const instructions = `Pour mettre à jour les astreintes :
 
-1. Dans la fenêtre qui vient de s'ouvrir, modifiez le fichier avec :
-{
-  "agent1": "${agent1}",
-  "agent2": "${agent2}",
-  "lastUpdate": "${new Date().toISOString()}"
-}
+1. Dans la fenêtre qui vient de s'ouvrir, remplacez tout le contenu par :
+
+${jsonContent}
 
 2. Cliquez sur "Update gist"
-3. Revenez sur cette page et actualisez pour voir les changements`);
+3. Revenez sur cette page et actualisez pour voir les changements`;
 
+        alert(instructions);
         closeModal();
     });
 
