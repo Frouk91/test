@@ -1610,6 +1610,56 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Fonction pour mettre à jour le Gist
+    async function updateGist(agent1, agent2) {
+        const data = {
+            agent1: agent1,
+            agent2: agent2,
+            lastUpdate: new Date().toISOString()
+        };
+
+        try {
+            const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                method: 'PATCH',
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    files: {
+                        'astreintes.json': {
+                            content: JSON.stringify(data, null, 2)
+                        }
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+
+            // Mettre à jour l'affichage
+            document.getElementById('agent1').textContent = agent1;
+            document.getElementById('agent2').textContent = agent2;
+
+            // Mettre à jour l'infobulle de dernière mise à jour
+            const dateFormat = new Intl.DateTimeFormat('fr-FR', {
+                dateStyle: 'medium',
+                timeStyle: 'short'
+            });
+            document.querySelector('.astreinte-content').setAttribute(
+                'title',
+                `Dernière mise à jour : ${dateFormat.format(new Date())}`
+            );
+
+            return true;
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour:', error);
+            alert('Erreur lors de la mise à jour des astreintes. Veuillez réessayer.');
+            return false;
+        }
+    }
+
     // Configuration des astreintes
     const modal = document.getElementById('astreinteModal');
     const configBtn = document.getElementById('configAstreinte');
@@ -1647,7 +1697,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Sauvegarder les agents sélectionnés
-    saveBtn.addEventListener('click', () => {
+    saveBtn.addEventListener('click', async () => {
         const agent1 = agent1Select.value;
         const agent2 = agent2Select.value;
 
@@ -1661,18 +1711,20 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Mettre à jour l'affichage
-        document.getElementById('agent1').textContent = agent1;
-        document.getElementById('agent2').textContent = agent2;
+        // Afficher un message de chargement
+        saveBtn.textContent = 'Mise à jour...';
+        saveBtn.disabled = true;
 
-        closeModal();
+        // Mettre à jour le Gist
+        const success = await updateGist(agent1, agent2);
 
-        // Afficher un message pour expliquer comment mettre à jour le Gist
-        alert(`Pour mettre à jour les astreintes :
-1. Allez sur le Gist : https://gist.github.com/${GIST_ID}
-2. Cliquez sur "Edit"
-3. Mettez à jour les noms des agents
-4. Cliquez sur "Update gist"`);
+        if (success) {
+            closeModal();
+        }
+
+        // Restaurer le bouton
+        saveBtn.textContent = 'Enregistrer';
+        saveBtn.disabled = false;
     });
 
     // Charger les données au démarrage
