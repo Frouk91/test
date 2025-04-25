@@ -1575,7 +1575,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fonction pour lire les données depuis le Gist
     async function fetchAstreinteData() {
         try {
-            // Lecture du Gist public (pas besoin de token)
             const response = await fetch(`https://api.github.com/gists/${GIST_ID}`);
             
             if (!response.ok) {
@@ -1607,56 +1606,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Erreur lors de la récupération des données:', error);
             return { agent1: 'Agent 1', agent2: 'Agent 2' };
-        }
-    }
-
-    // Fonction pour mettre à jour le Gist
-    async function updateGist(agent1, agent2) {
-        const data = {
-            agent1: agent1,
-            agent2: agent2,
-            lastUpdate: new Date().toISOString()
-        };
-
-        try {
-            const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                method: 'PATCH',
-                headers: {
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    files: {
-                        'astreintes.json': {
-                            content: JSON.stringify(data, null, 2)
-                        }
-                    }
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`Erreur HTTP: ${response.status}`);
-            }
-
-            // Mettre à jour l'affichage
-            document.getElementById('agent1').textContent = agent1;
-            document.getElementById('agent2').textContent = agent2;
-
-            // Mettre à jour l'infobulle de dernière mise à jour
-            const dateFormat = new Intl.DateTimeFormat('fr-FR', {
-                dateStyle: 'medium',
-                timeStyle: 'short'
-            });
-            document.querySelector('.astreinte-content').setAttribute(
-                'title',
-                `Dernière mise à jour : ${dateFormat.format(new Date())}`
-            );
-
-            return true;
-        } catch (error) {
-            console.error('Erreur lors de la mise à jour:', error);
-            alert('Erreur lors de la mise à jour des astreintes. Veuillez réessayer.');
-            return false;
         }
     }
 
@@ -1696,8 +1645,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === modal) closeModal();
     });
 
-    // Sauvegarder les agents sélectionnés
-    saveBtn.addEventListener('click', async () => {
+    // Modifier la fonction de sauvegarde
+    saveBtn.addEventListener('click', () => {
         const agent1 = agent1Select.value;
         const agent2 = agent2Select.value;
 
@@ -1711,20 +1660,24 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Afficher un message de chargement
-        saveBtn.textContent = 'Mise à jour...';
-        saveBtn.disabled = true;
+        // Ouvrir le Gist dans un nouvel onglet avec les instructions
+        const gistUrl = `https://gist.github.com/Frouk91/${GIST_ID}/edit`;
+        window.open(gistUrl, '_blank');
 
-        // Mettre à jour le Gist
-        const success = await updateGist(agent1, agent2);
+        // Afficher les instructions
+        alert(`Pour mettre à jour les astreintes :
 
-        if (success) {
-            closeModal();
-        }
+1. Dans la fenêtre qui vient de s'ouvrir, modifiez le fichier avec :
+{
+  "agent1": "${agent1}",
+  "agent2": "${agent2}",
+  "lastUpdate": "${new Date().toISOString()}"
+}
 
-        // Restaurer le bouton
-        saveBtn.textContent = 'Enregistrer';
-        saveBtn.disabled = false;
+2. Cliquez sur "Update gist"
+3. Revenez sur cette page et actualisez pour voir les changements`);
+
+        closeModal();
     });
 
     // Charger les données au démarrage
