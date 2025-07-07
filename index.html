@@ -2824,31 +2824,8 @@ body:not(.preloader-active) footer {
                     const jsonContent = JSON.stringify(window.astreinteData, null, 2);
 
                     const gistUrl = `https://gist.github.com/Frouk91/${GIST_ID}/edit`;
-                    navigator.clipboard.writeText(jsonContent)
-                        .then(() => {
-                            window.open(gistUrl, '_blank');
-                            alert(`Pour mettre à jour les astreintes :
-
-1. Dans la fenêtre qui vient de s'ouvrir, remplacez tout le contenu par :
-
-${jsonContent}
-
-2. Cliquez sur "Update gist"
-3. Revenez sur cette page et actualisez pour voir les changements`);
-                        })
-                        .catch(() => {
-                            alert("Impossible de copier automatiquement dans le presse-papiers. Merci de copier manuellement le texte affiché.");
-                            window.open(gistUrl, '_blank');
-                            alert(`Pour mettre à jour les astreintes :
-
-1. Dans la fenêtre qui vient de s'ouvrir, remplacez tout le contenu par :
-
-${jsonContent}
-
-2. Cliquez sur "Update gist"
-3. Revenez sur cette page et actualisez pour voir les changements`);
-                        });
-                    hideAstreinteModal();
+                    window.open(gistUrl, '_blank');
+                    // Plus d'alert, les instructions sont dans le modal de copie JSON
                 });
             }
 
@@ -2883,8 +2860,9 @@ ${jsonContent}
                 }
                 astreinteList.push({ date: formattedDate, agent1, agent2 });
                 updateAstreinteTable();
-                agent1Select.value = '';
-                agent2Select.value = '';
+                // Ne pas réinitialiser les sélecteurs d'agents ici
+                // agent1Select.value = '';
+                // agent2Select.value = '';
             });
 
             function updateAstreinteTable() {
@@ -2915,7 +2893,7 @@ ${jsonContent}
             // Adapter le bouton Enregistrer
             saveAstreinteBtn.addEventListener('click', function () {
                 if (astreinteList.length === 0) {
-                    alert('Ajoutez au moins une astreinte à la liste.');
+                    // alert('Ajoutez au moins une astreinte à la liste.');
                     return;
                 }
                 // Ajout groupé dans window.astreinteData.astreintes
@@ -2939,39 +2917,36 @@ ${jsonContent}
                 copySuccessMsg.style.display = 'none';
                 copyJsonBtn.onclick = function() {
                     jsonAstreinteTextarea.select();
-                    let copied = false;
-                    // Essayer d'abord la nouvelle API
                     if (navigator.clipboard && window.isSecureContext) {
                         navigator.clipboard.writeText(jsonAstreinteTextarea.value)
                             .then(() => {
                                 copySuccessMsg.style.display = 'inline';
+                                copySuccessMsg.textContent = 'Copié !';
+                                copySuccessMsg.style.color = 'var(--tertiary)';
                             })
                             .catch(() => {
-                                // Fallback sur execCommand
-                                try {
-                                    if (document.execCommand('copy')) {
-                                        copySuccessMsg.style.display = 'inline';
-                                    } else {
-                                        alert("Impossible de copier automatiquement. Merci de copier manuellement le texte ci-dessous.");
-                                    }
-                                } catch (e) {
-                                    alert("Impossible de copier automatiquement. Merci de copier manuellement le texte ci-dessous.");
-                                }
+                                copySuccessMsg.style.display = 'inline';
+                                copySuccessMsg.textContent = "Impossible de copier automatiquement. Merci de copier manuellement le texte ci-dessous.";
+                                copySuccessMsg.style.color = 'var(--accent)';
                             });
                     } else {
-                        // Fallback sur execCommand
                         try {
                             if (document.execCommand('copy')) {
                                 copySuccessMsg.style.display = 'inline';
+                                copySuccessMsg.textContent = 'Copié !';
+                                copySuccessMsg.style.color = 'var(--tertiary)';
                             } else {
-                                alert("Impossible de copier automatiquement. Merci de copier manuellement le texte ci-dessous.");
+                                copySuccessMsg.style.display = 'inline';
+                                copySuccessMsg.textContent = "Impossible de copier automatiquement. Merci de copier manuellement le texte ci-dessous.";
+                                copySuccessMsg.style.color = 'var(--accent)';
                             }
                         } catch (e) {
-                            alert("Impossible de copier automatiquement. Merci de copier manuellement le texte ci-dessous.");
+                            copySuccessMsg.style.display = 'inline';
+                            copySuccessMsg.textContent = "Impossible de copier automatiquement. Merci de copier manuellement le texte ci-dessous.";
+                            copySuccessMsg.style.color = 'var(--accent)';
                         }
                     }
-                    // Ouvre le gist dans tous les cas
-                    window.open(gistUrl, '_blank');
+                    // window.open(gistUrl, '_blank'); // Suppression de l'ouverture du lien ici
                 };
                 document.getElementById('closeJsonCopyModal').onclick = function() {
                     jsonCopyModal.classList.remove('active');
