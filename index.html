@@ -2891,12 +2891,12 @@ body:not(.preloader-active) footer {
             };
 
             // Adapter le bouton Enregistrer
-            saveAstreinteBtn.addEventListener('click', function () {
+            saveAstreinteBtn.replaceWith(saveAstreinteBtn.cloneNode(true));
+            const newSaveAstreinteBtn = document.getElementById('saveAstreinte');
+            newSaveAstreinteBtn.addEventListener('click', function () {
                 if (astreinteList.length === 0) {
-                    // alert('Ajoutez au moins une astreinte à la liste.');
                     return;
                 }
-                // Ajout groupé dans window.astreinteData.astreintes
                 astreinteList.forEach(newAstreinte => {
                     const existingIndex = window.astreinteData.astreintes.findIndex(a => a.date === newAstreinte.date);
                     if (existingIndex >= 0) {
@@ -2907,7 +2907,6 @@ body:not(.preloader-active) footer {
                 });
                 window.astreinteData.lastUpdate = new Date().toISOString();
                 const jsonContent = JSON.stringify(window.astreinteData, null, 2);
-                // Afficher le modal de copie JSON
                 const jsonCopyModal = document.getElementById('jsonCopyModal');
                 const jsonAstreinteTextarea = document.getElementById('jsonAstreinteTextarea');
                 const copyJsonBtn = document.getElementById('copyJsonBtn');
@@ -2946,12 +2945,11 @@ body:not(.preloader-active) footer {
                             copySuccessMsg.style.color = 'var(--accent)';
                         }
                     }
-                    // window.open(gistUrl, '_blank'); // Suppression de l'ouverture du lien ici
+                    // window.open(gistUrl, '_blank');
                 };
                 document.getElementById('closeJsonCopyModal').onclick = function() {
                     jsonCopyModal.classList.remove('active');
                 };
-                // Ouvre aussi le Gist dans un nouvel onglet
                 const gistUrl = `https://gist.github.com/Frouk91/${GIST_ID}/edit`;
                 window.open(gistUrl, '_blank');
                 astreinteList = [];
